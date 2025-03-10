@@ -1,6 +1,7 @@
 package team.themoment.imi.domain.profile.entity;
 
 import jakarta.persistence.*;
+import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.global.utils.StringListToStringConverter;
 
 import java.util.List;
@@ -14,4 +15,8 @@ public class Profile {
     private List<String> wanted;
     private String major;
     private String content;
+
+    @OneToOne
+    @JoinColumn(name="user_id")
+    private User user;
 }

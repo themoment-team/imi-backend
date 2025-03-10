@@ -15,7 +15,6 @@ public class User {
     private String email;
     private int studentId; // 학번
     private String password; // encrypted string
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="profile_id")
+    @OneToOne(mappedBy = "user")
     private Profile profile;
 }
