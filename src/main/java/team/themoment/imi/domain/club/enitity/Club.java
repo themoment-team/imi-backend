@@ -15,5 +15,6 @@ public class Club {
     private String name;
     private String leader;
     private String mainContent;
+    private String notionUrl;
     private String iconUrl;
 }
