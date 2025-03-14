@@ -24,12 +24,11 @@ public class LoginServiceImpl implements LogInService {
     @Override
     public LoginResDto execute(String email, String password) {
         User user = userJpaRepository.findByEmail(email);
-        if(passwordEncoder.matches(user.getPassword(), password)){
+        if (passwordEncoder.matches(password, user.getPassword())) {
             TokenDto accessToken = jwtIssueService.issueAccessToken(user.getEmail());
             String refreshToken = jwtIssueService.issueRefreshToken(user.getEmail());
             return new LoginResDto(accessToken.token(), refreshToken, accessToken.expiresIn(), new Date().getTime());
-        }
-        else {
+        } else {
             throw new SignInFailedException();
         }
     }
