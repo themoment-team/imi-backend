@@ -15,7 +15,7 @@ import team.themoment.imi.domain.auth.service.LogInService;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private LogInService logInService;
+    private final LogInService logInService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@Valid @RequestBody LoginReqDto reqDto) {
