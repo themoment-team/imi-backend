@@ -6,4 +6,6 @@ public interface JwtParserService {
     Boolean validateToken(String token);
 
     Boolean validateRefreshToken(String token);
+
+    void deleteRefreshToken(String token);
 }

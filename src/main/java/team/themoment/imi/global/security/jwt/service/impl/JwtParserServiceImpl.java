@@ -1,10 +1,14 @@
 package team.themoment.imi.global.security.jwt.service.impl;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import team.themoment.imi.global.security.exception.ExpiredJwtTokenException;
+import team.themoment.imi.global.security.exception.InvalidJwtTokenException;
 import team.themoment.imi.global.security.jwt.repository.RefreshTokenRedisRepository;
 import team.themoment.imi.global.security.jwt.service.JwtParserService;
 
@@ -31,14 +35,21 @@ public class JwtParserServiceImpl implements JwtParserService {
         try {
             parseClaims(token);
             return true;
-        } catch (Exception e) {
-            return false;
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredJwtTokenException();
+        } catch (JwtException e) {
+            throw new InvalidJwtTokenException();
         }
     }
 
     @Override
     public Boolean validateRefreshToken(String token) {
-        return refreshTokenRedisRepository.existsByRefreshToken(token);
+        return refreshTokenRedisRepository.existsById(token);
+    }
+
+    @Override
+    public void deleteRefreshToken(String token) {
+        refreshTokenRedisRepository.deleteById(token);
     }
 
     private Claims parseClaims(String token) {
