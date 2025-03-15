@@ -36,8 +36,8 @@ public class JwtIssueServiceImpl implements JwtIssueService {
         Date expirationDate = new Date(System.currentTimeMillis() + accessTokenExpiration * 1000);
         String token = Jwts.builder()
                 .claim("sub", userId)
-                .claim("iat", System.currentTimeMillis())
-                .claim("exp", expirationDate.getTime())
+                .claim("iat", System.currentTimeMillis() / 1000)
+                .claim("exp", expirationDate.getTime() / 1000)
                 .claim("jti", UUID.randomUUID().toString())
                 .signWith(key)
                 .compact();
@@ -49,8 +49,8 @@ public class JwtIssueServiceImpl implements JwtIssueService {
         Date expirationDate = new Date(System.currentTimeMillis() + refreshTokenExpiration * 1000);
         String token = Jwts.builder()
                 .claim("sub", userId)
-                .claim("iat", System.currentTimeMillis())
-                .claim("exp", expirationDate.getTime())
+                .claim("iat", System.currentTimeMillis() / 1000)
+                .claim("exp", expirationDate.getTime() / 1000)
                 .claim("jti", UUID.randomUUID().toString())
                 .signWith(key)
                 .compact();
