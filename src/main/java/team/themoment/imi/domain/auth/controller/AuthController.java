@@ -9,6 +9,7 @@ import team.themoment.imi.domain.auth.data.request.LoginReqDto;
 import team.themoment.imi.domain.auth.data.request.RefreshJwtReqDto;
 import team.themoment.imi.domain.auth.data.response.LoginResDto;
 import team.themoment.imi.domain.auth.service.LogInService;
+import team.themoment.imi.domain.auth.service.RefreshService;
 
 @RestController
 @RequestMapping("/auth")
@@ -16,6 +17,7 @@ import team.themoment.imi.domain.auth.service.LogInService;
 public class AuthController {
 
     private final LogInService logInService;
+    private final RefreshService refreshService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@Valid @RequestBody LoginReqDto reqDto) {
@@ -23,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public void refresh(@Valid @RequestBody RefreshJwtReqDto reqDto) {
-        // authService.refresh();
+    public ResponseEntity<LoginResDto> refresh(@Valid @RequestBody RefreshJwtReqDto reqDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(refreshService.execute(reqDto.refreshToken()));
     }
 }
