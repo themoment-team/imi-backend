@@ -6,7 +6,4 @@ import team.themoment.imi.global.security.jwt.entity.RefreshTokenRedisEntity;
 
 @Repository
 public interface RefreshTokenRedisRepository extends CrudRepository<RefreshTokenRedisEntity, String> {
-    Boolean existsByRefreshToken(String refreshToken);
-
-    void deleteByRefreshToken(String refreshToken);
 }
