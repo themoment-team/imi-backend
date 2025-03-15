@@ -13,6 +13,7 @@ import team.themoment.imi.global.security.jwt.repository.RefreshTokenRedisReposi
 import team.themoment.imi.global.security.jwt.service.JwtParserService;
 
 import javax.crypto.SecretKey;
+import java.util.Date;
 
 @Service
 public class JwtParserServiceImpl implements JwtParserService {
@@ -53,6 +54,6 @@ public class JwtParserServiceImpl implements JwtParserService {
     }
 
     private Claims parseClaims(String token) {
-        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser().verifyWith(key).clock(Date::new).build().parseSignedClaims(token).getPayload();
     }
 }
