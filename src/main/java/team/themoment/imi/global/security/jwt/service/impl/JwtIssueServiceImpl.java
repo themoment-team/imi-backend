@@ -33,7 +33,7 @@ public class JwtIssueServiceImpl implements JwtIssueService {
 
     @Override
     public TokenDto issueAccessToken(String userId) {
-        Date expirationDate = new Date(System.currentTimeMillis() + accessTokenExpiration * 1000);
+        Date expirationDate = new Date(System.currentTimeMillis() + accessTokenExpiration);
         String token = Jwts.builder()
                 .claim("sub", userId)
                 .claim("iat", System.currentTimeMillis() / 1000)
@@ -46,7 +46,7 @@ public class JwtIssueServiceImpl implements JwtIssueService {
 
     @Override
     public String issueRefreshToken(String userId) {
-        Date expirationDate = new Date(System.currentTimeMillis() + refreshTokenExpiration * 1000);
+        Date expirationDate = new Date(System.currentTimeMillis() + refreshTokenExpiration);
         String token = Jwts.builder()
                 .claim("sub", userId)
                 .claim("iat", System.currentTimeMillis() / 1000)
