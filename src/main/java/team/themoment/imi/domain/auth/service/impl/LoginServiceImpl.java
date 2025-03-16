@@ -23,7 +23,8 @@ public class LoginServiceImpl implements LogInService {
 
     @Override
     public LoginResDto execute(String email, String password) {
-        User user = userJpaRepository.findByEmail(email);
+        User user = userJpaRepository.findByEmail(email)
+                .orElseThrow(SignInFailedException::new);
         if (passwordEncoder.matches(password, user.getPassword())) {
             TokenDto accessToken = jwtIssueService.issueAccessToken(user.getEmail());
             String refreshToken = jwtIssueService.issueRefreshToken(user.getEmail());
