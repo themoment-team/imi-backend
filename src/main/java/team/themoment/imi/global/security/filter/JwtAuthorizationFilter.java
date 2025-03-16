@@ -11,8 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 import team.themoment.imi.global.security.auth.CustomUserDetails;
-import team.themoment.imi.global.security.exception.ExpiredJwtTokenException;
-import team.themoment.imi.global.security.exception.InvalidJwtTokenException;
+import team.themoment.imi.global.security.exception.ExpiredAccessTokenException;
+import team.themoment.imi.global.security.exception.InvalidAccessTokenException;
 import team.themoment.imi.global.security.jwt.service.JwtParserService;
 
 import java.io.IOException;
@@ -46,10 +46,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 }
-            } catch (ExpiredJwtTokenException e) {
+            } catch (ExpiredAccessTokenException e) {
                 setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token has expired");
                 return;
-            } catch (InvalidJwtTokenException e) {
+            } catch (InvalidAccessTokenException e) {
                 setErrorResponse(response, HttpStatus.UNAUTHORIZED, "Invalid JWT token");
                 return;
             }

@@ -7,8 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import team.themoment.imi.global.security.exception.ExpiredJwtTokenException;
-import team.themoment.imi.global.security.exception.InvalidJwtTokenException;
+import team.themoment.imi.global.security.exception.ExpiredAccessTokenException;
+import team.themoment.imi.global.security.exception.InvalidAccessTokenException;
 import team.themoment.imi.global.security.jwt.repository.RefreshTokenRedisRepository;
 import team.themoment.imi.global.security.jwt.service.JwtParserService;
 
@@ -37,9 +37,9 @@ public class JwtParserServiceImpl implements JwtParserService {
             parseClaims(token);
             return true;
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtTokenException();
+            throw new ExpiredAccessTokenException();
         } catch (JwtException e) {
-            throw new InvalidJwtTokenException();
+            throw new InvalidAccessTokenException();
         }
     }
 
