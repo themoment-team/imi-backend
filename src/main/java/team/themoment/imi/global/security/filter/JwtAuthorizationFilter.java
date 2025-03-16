@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
+import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.global.security.auth.CustomUserDetails;
 import team.themoment.imi.global.security.exception.ExpiredAccessTokenException;
 import team.themoment.imi.global.security.exception.InvalidAccessTokenException;
@@ -40,7 +41,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 if (jwtParserService.validateToken(token)) {
                     String username = jwtParserService.extractUserId(token);
                     if (username != null) {
-                        UserDetails userDetails = new CustomUserDetails(username);
+                        UserDetails userDetails = new CustomUserDetails(User.builder().email(username).build());
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
