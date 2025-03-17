@@ -9,7 +9,7 @@ import team.themoment.imi.domain.user.dto.UpdatePasswordReqDto;
 import team.themoment.imi.domain.user.dto.UpdateUserReqDto;
 import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.domain.user.service.UserService;
-import team.themoment.imi.global.utils.UserUtilNotImpl;
+import team.themoment.imi.global.utils.UserUtil;
 
 @RestController
 @RequestMapping("/user")
@@ -17,7 +17,7 @@ import team.themoment.imi.global.utils.UserUtilNotImpl;
 @Validated
 public class UserController {
     private final UserService userService;
-    private final UserUtilNotImpl userUtil;
+    private final UserUtil userUtil;
 
     @PostMapping("/join")
     public void join(@Valid @RequestBody CreateUserReqDto dto) {

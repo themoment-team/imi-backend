@@ -11,7 +11,7 @@ import team.themoment.imi.domain.profile.service.ProfileService;
 import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.global.mapper.ProfileMapper;
 import team.themoment.imi.global.exception.GlobalException;
-import team.themoment.imi.global.utils.UserUtilNotImpl;
+import team.themoment.imi.global.utils.UserUtil;
 
 @RestController
 @RequestMapping("/profile")
@@ -20,7 +20,7 @@ public class ProfileController {
 
     private final ProfileService profileService;
     private final ProfileMapper profileMapper;
-    private final UserUtilNotImpl userUtil;
+    private final UserUtil userUtil;
 
     //studentInfo: 학번+이름
     @GetMapping("/{studentInfo}")

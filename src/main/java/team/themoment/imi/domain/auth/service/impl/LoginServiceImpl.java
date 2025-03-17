@@ -7,7 +7,7 @@ import team.themoment.imi.domain.auth.data.response.LoginResDto;
 import team.themoment.imi.domain.auth.exception.SignInFailedException;
 import team.themoment.imi.domain.auth.service.LogInService;
 import team.themoment.imi.domain.user.entity.User;
-import team.themoment.imi.domain.user.repository.UserJpaRepository;
+import team.themoment.imi.domain.user.repository.UserRepository;
 import team.themoment.imi.global.security.jwt.data.TokenDto;
 import team.themoment.imi.global.security.jwt.service.JwtIssueService;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 public class LoginServiceImpl implements LogInService {
 
     private final JwtIssueService jwtIssueService;
-    private final UserJpaRepository userJpaRepository;
+    private final UserRepository userJpaRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
