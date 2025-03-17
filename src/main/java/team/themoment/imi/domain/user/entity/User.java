@@ -17,6 +17,7 @@ public class User {
     private String email;
     private int studentId; // 학번
     private String password; // encrypted string
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name="profile_id")
     private Profile profile;
 }
