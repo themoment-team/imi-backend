@@ -22,7 +22,6 @@ public class Profile {
     private String major;
     private String content;
 
-    @OneToOne
-    @JoinColumn(name="user_id")
+    @OneToOne(mappedBy = "profile")
     private User user;
 }

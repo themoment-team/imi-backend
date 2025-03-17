@@ -1,20 +1,37 @@
 package team.themoment.imi.domain.user.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import team.themoment.imi.domain.profile.entity.Profile;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import team.themoment.imi.domain.user.dto.CreateUserReqDto;
+import team.themoment.imi.domain.user.dto.UpdatePasswordReqDto;
+import team.themoment.imi.domain.user.dto.UpdateUserReqDto;
 import team.themoment.imi.domain.user.entity.User;
-
-import java.util.List;
+import team.themoment.imi.domain.user.service.UserService;
+import team.themoment.imi.global.utils.UserUtilNotImpl;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
+@Validated
 public class UserController {
-    @PostMapping("/join")
-    public void join(@RequestBody CreateUserReqDto dto) {
+    private final UserService userService;
+    private final UserUtilNotImpl userUtil;
 
+    @PostMapping("/join")
+    public void join(@Valid @RequestBody CreateUserReqDto dto) {
+        userService.join(dto);
+    }
+
+    @PutMapping
+    public void updateUserInfo(@Valid @RequestBody UpdateUserReqDto dto) {
+        User user = userUtil.getCurrentUser();
+        userService.updateUserInfo(user, dto);
+    }
+    @PutMapping("/password")
+    public void updatePassword(@Valid @RequestBody UpdatePasswordReqDto dto) {
+        User user = userUtil.getCurrentUser();
+        userService.updatePassword(user, dto);
     }
 }
