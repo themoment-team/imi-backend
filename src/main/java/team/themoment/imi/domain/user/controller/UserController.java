@@ -2,8 +2,10 @@ package team.themoment.imi.domain.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import team.themoment.imi.domain.user.dto.CheckEmailReqDto;
 import team.themoment.imi.domain.user.dto.CreateUserReqDto;
 import team.themoment.imi.domain.user.dto.UpdatePasswordReqDto;
 import team.themoment.imi.domain.user.dto.UpdateUserReqDto;
@@ -33,5 +35,9 @@ public class UserController {
     public void updatePassword(@Valid @RequestBody UpdatePasswordReqDto dto) {
         User user = userUtil.getCurrentUser();
         userService.updatePassword(user, dto);
+    }
+    @GetMapping("/checkEmail")
+    public ResponseEntity<Boolean> checkEmail(@RequestBody CheckEmailReqDto dto) {
+        return ResponseEntity.ok(userService.checkEmail(dto.getEmail()));
     }
 }
