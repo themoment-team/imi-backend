@@ -20,9 +20,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    public boolean checkEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
     public void join(CreateUserReqDto dto) {
 
-        if(userRepository.existsByEmail(dto.getEmail())) {
+        if(checkEmail(dto.getEmail())) {
             throw new GlobalException("이미 존재하는 이메일입니다.",HttpStatus.CONFLICT);
         }
         if(userRepository.existsByStudentId(dto.getStudentId())) {
