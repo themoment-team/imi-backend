@@ -17,7 +17,7 @@ public class CreateUserReqDto {
     @NotNull(message = "학번을 입력해주세요.")
     @Min(value = 1101, message = "학번을 다시 확인해주세요.")
     @Max(value = 3418, message = "학번을 다시 확인해주세요.")
-    private int studentId;
+    private Integer studentId;
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 }

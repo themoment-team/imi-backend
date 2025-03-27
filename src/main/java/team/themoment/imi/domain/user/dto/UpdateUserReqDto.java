@@ -13,5 +13,5 @@ public class UpdateUserReqDto {
     @NotBlank(message = "이메일을 입력해주세요.")
     private String email;
     @NotNull(message = "학번을 입력해주세요.")
-    private int studentId;
+    private Integer studentId;
 }
