@@ -20,6 +20,7 @@ public class ProfileMapper {
     }
     public ProfileListResDto toProfileListResDto(List<Profile> profiles){
         return ProfileListResDto.builder()
+                .amount(profiles.size())
                 .profileList(profiles.stream().map(this::toProfileResDto).collect(Collectors.toList()))
                 .build();
     }
