@@ -10,6 +10,7 @@ public class DomainAuthorizationConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/user/join").permitAll()
+                .requestMatchers("/user/checkEmail").permitAll()
                 .requestMatchers("/user/**").authenticated()
                 .requestMatchers("/club/**").authenticated()
                 .anyRequest().authenticated()

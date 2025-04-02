@@ -2,6 +2,7 @@ package team.themoment.imi.domain.profile.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team.themoment.imi.domain.profile.dto.ProfileListResDto;
 import team.themoment.imi.domain.profile.dto.ProfileResDto;
@@ -24,12 +25,12 @@ public class ProfileController {
 
     //studentInfo: 학번+이름
     @GetMapping("/{studentInfo}")
-    public ProfileResDto getProfile(@PathVariable String studentInfo){
+    public ResponseEntity<ProfileResDto> getProfile(@PathVariable String studentInfo){
         try {
             String name = studentInfo.substring(4);
             int studentId = Integer.parseInt(studentInfo.substring(0,4));
             Profile profile = profileService.getProfileByStudentInfo(studentId,name);
-            return profileMapper.toProfileResDto(profile);
+            return ResponseEntity.status(HttpStatus.OK).body(profileMapper.toProfileResDto(profile));
 
         }catch (IndexOutOfBoundsException e){
             throw new GlobalException("너무 짧은 학생정보가 입력되었습니다.", HttpStatus.BAD_REQUEST);
@@ -38,18 +39,19 @@ public class ProfileController {
         }
     }
     @GetMapping("/my")
-    public ProfileResDto getMyProfile(){
+    public ResponseEntity<ProfileResDto> getMyProfile(){
         User user = userUtil.getCurrentUser();
-        return profileMapper.toProfileResDto(user.getProfile());
+        return ResponseEntity.status(HttpStatus.OK).body(profileMapper.toProfileResDto(user.getProfile()));
     }
     @GetMapping("/list")
-    public ProfileListResDto getProfileList(){
-        return profileMapper.toProfileListResDto(profileService.getProfileList());
+    public ResponseEntity<ProfileListResDto> getProfileList(){
+        return ResponseEntity.status(HttpStatus.OK).body(profileMapper.toProfileListResDto(profileService.getProfileList()));
     }
 
     @PutMapping
-    public void updateProfile(@RequestBody UpdateProfileReqDto dto) {
+    public ResponseEntity<Void> updateProfile(@RequestBody UpdateProfileReqDto dto) {
         User user = userUtil.getCurrentUser();
         profileService.updateProfile(user.getProfile(), dto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

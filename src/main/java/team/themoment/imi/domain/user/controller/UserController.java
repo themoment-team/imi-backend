@@ -2,6 +2,7 @@ package team.themoment.imi.domain.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,22 +23,26 @@ public class UserController {
     private final UserUtil userUtil;
 
     @PostMapping("/join")
-    public void join(@Valid @RequestBody CreateUserReqDto dto) {
+    public ResponseEntity<Void> join(@Valid @RequestBody CreateUserReqDto dto) {
         userService.join(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping
-    public void updateUserInfo(@Valid @RequestBody UpdateUserReqDto dto) {
+    public ResponseEntity<Void> updateUserInfo(@Valid @RequestBody UpdateUserReqDto dto) {
         User user = userUtil.getCurrentUser();
         userService.updateUserInfo(user, dto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     @PutMapping("/password")
-    public void updatePassword(@Valid @RequestBody UpdatePasswordReqDto dto) {
+    public ResponseEntity<Void> updatePassword(@Valid @RequestBody UpdatePasswordReqDto dto) {
         User user = userUtil.getCurrentUser();
         userService.updatePassword(user, dto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
-    @GetMapping("/checkEmail")
-    public ResponseEntity<Boolean> checkEmail(@RequestBody CheckEmailReqDto dto) {
-        return ResponseEntity.ok(userService.checkEmail(dto.getEmail()));
+
+    @PostMapping("/checkEmail")
+    public ResponseEntity<Boolean> checkEmail(@Valid @RequestBody CheckEmailReqDto dto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.checkEmail(dto.getEmail()));
     }
 }
