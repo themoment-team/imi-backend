@@ -9,10 +9,18 @@ public class DomainAuthorizationConfig {
     public void configureAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
+
+                .requestMatchers("/profile/{studentId}").permitAll()
+                .requestMatchers("/profile/list").permitAll()
+                .requestMatchers("/profile/my").authenticated()
+                .requestMatchers("/profile").permitAll()
+
                 .requestMatchers("/user/join").permitAll()
                 .requestMatchers("/user/checkEmail").permitAll()
-                .requestMatchers("/user/**").authenticated()
-                .requestMatchers("/club/**").authenticated()
+                .requestMatchers("/user/password").authenticated()
+                .requestMatchers("/user").authenticated()
+
+                .requestMatchers("/club").permitAll()
                 .anyRequest().authenticated()
         );
     }
