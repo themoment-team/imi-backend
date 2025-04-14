@@ -8,7 +8,12 @@ import java.util.List;
 @Setter
 @Builder
 public class ProfileResDto {
-    private Long userId;
+    //User
+    private String name;
+    private String email;
+    private int studentId; // 학번
+    //Profile
+    private Long id;
     private List<String> wanted;
     private String major;
     private String content;

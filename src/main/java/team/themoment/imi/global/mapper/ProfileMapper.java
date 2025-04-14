@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 public class ProfileMapper {
     public ProfileResDto toProfileResDto(Profile profile){
         return ProfileResDto.builder()
-                .userId(profile.getUser().getId())
+                .name(profile.getUser().getName())
+                .email(profile.getUser().getEmail())
+                .studentId(profile.getUser().getStudentId())
                 .wanted(profile.getWanted())
                 .major(profile.getMajor())
                 .content(profile.getContent())
