@@ -22,6 +22,6 @@ public class Profile {
     private String major;
     private String content;
 
-    @OneToOne(mappedBy = "profile")
+    @OneToOne(mappedBy = "profile",fetch = FetchType.EAGER)
     private User user;
 }
