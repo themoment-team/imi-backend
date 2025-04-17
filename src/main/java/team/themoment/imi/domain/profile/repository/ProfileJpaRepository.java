@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import team.themoment.imi.domain.profile.entity.Profile;
 
 @Repository
-public interface ProfileRepository extends JpaRepository<Profile, Long> {
+public interface ProfileJpaRepository extends JpaRepository<Profile, Long> {
 }
