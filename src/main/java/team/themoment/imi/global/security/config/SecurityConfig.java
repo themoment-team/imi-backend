@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 import team.themoment.imi.global.security.filter.JwtAuthorizationFilter;
-import team.themoment.imi.global.security.jwt.service.JwtParserService;
+import team.themoment.imi.global.security.jwt.service.JwtService;
 
 import java.util.Collections;
 
@@ -25,7 +25,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtParserService jwtParserService;
+    private final JwtService jwtService;
     private final DomainAuthorizationConfig domainAuthorizationConfig;
 
     @Bean
@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(
-                        new JwtAuthorizationFilter(jwtParserService),
+                        new JwtAuthorizationFilter(jwtService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .exceptionHandling(exceptions -> {

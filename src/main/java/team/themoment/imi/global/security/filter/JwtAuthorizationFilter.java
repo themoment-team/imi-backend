@@ -14,7 +14,7 @@ import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.global.security.auth.CustomUserDetails;
 import team.themoment.imi.global.security.exception.ExpiredAccessTokenException;
 import team.themoment.imi.global.security.exception.InvalidAccessTokenException;
-import team.themoment.imi.global.security.jwt.service.JwtParserService;
+import team.themoment.imi.global.security.jwt.service.JwtService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtParserService jwtParserService;
+    private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,8 +43,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
             try {
-                if (jwtParserService.validateToken(token)) {
-                    String username = jwtParserService.extractUserId(token);
+                if (jwtService.validateToken(token)) {
+                    String username = jwtService.extractUserId(token);
                     if (username != null) {
                         UserDetails userDetails = new CustomUserDetails(User.builder().email(username).build());
                         UsernamePasswordAuthenticationToken authentication =
