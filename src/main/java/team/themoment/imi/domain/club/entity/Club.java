@@ -1,4 +1,4 @@
-package team.themoment.imi.domain.club.enitity;
+package team.themoment.imi.domain.club.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

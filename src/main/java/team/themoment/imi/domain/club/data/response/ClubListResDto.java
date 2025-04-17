@@ -1,6 +1,6 @@
 package team.themoment.imi.domain.club.data.response;
 
-import team.themoment.imi.domain.club.enitity.Club;
+import team.themoment.imi.domain.club.entity.Club;
 
 import java.util.List;
 
