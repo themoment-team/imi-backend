@@ -1,13 +1,14 @@
 package team.themoment.imi.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.profile.entity.Profile;
 import team.themoment.imi.domain.user.entity.User;
+import team.themoment.imi.domain.user.exception.AlreadyMemberException;
+import team.themoment.imi.domain.user.exception.EmailFormatException;
+import team.themoment.imi.domain.user.exception.InvalidPasswordException;
 import team.themoment.imi.domain.user.repository.UserJpaRepository;
-import team.themoment.imi.global.exception.GlobalException;
 import team.themoment.imi.global.utils.UserUtil;
 
 import java.util.List;
@@ -22,10 +23,10 @@ public class UserService {
 
     public void join(String name, String email, int studentId, String password) {
         if (userJpaRepository.existsByEmail(email)) {
-            throw new GlobalException("이미 존재하는 이메일입니다.", HttpStatus.CONFLICT);
+            throw new AlreadyMemberException();
         }
         if (userJpaRepository.existsByStudentId(studentId)) {
-            throw new GlobalException("이미 존재하는 학번입니다.", HttpStatus.CONFLICT);
+            throw new AlreadyMemberException();
         }
 
         User user = User.builder()
@@ -49,7 +50,7 @@ public class UserService {
 
     public void updateUserInfo(String name, String email, int studentId) {
         if (isEmailFormat(email)) {
-            throw new GlobalException("이메일 형식이 올바르지 않습니다.", HttpStatus.BAD_REQUEST);
+            throw new EmailFormatException();
         }
 
         User user = userUtil.getCurrentUser();
@@ -69,7 +70,7 @@ public class UserService {
         User user = userUtil.getCurrentUser();
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new GlobalException("기존 비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
+            throw new InvalidPasswordException();
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userJpaRepository.save(user);
@@ -77,7 +78,7 @@ public class UserService {
 
     public Boolean checkEmail(String email) {
         if (isEmailFormat(email)) {
-            throw new GlobalException("이메일 형식이 올바르지 않습니다.", HttpStatus.BAD_REQUEST);
+            throw new EmailFormatException();
         }
         return userJpaRepository.existsByEmail(email);
     }

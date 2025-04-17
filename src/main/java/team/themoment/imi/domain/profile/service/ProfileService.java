@@ -6,8 +6,11 @@ import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.profile.data.response.ProfileListResDto;
 import team.themoment.imi.domain.profile.data.response.ProfileResDto;
 import team.themoment.imi.domain.profile.entity.Profile;
+import team.themoment.imi.domain.profile.exception.InvalidStudentIdException;
 import team.themoment.imi.domain.profile.repository.ProfileJpaRepository;
 import team.themoment.imi.domain.user.entity.User;
+import team.themoment.imi.domain.profile.exception.InvalidUserNameException;
+import team.themoment.imi.domain.user.exception.MemberNotFoundException;
 import team.themoment.imi.domain.user.repository.UserJpaRepository;
 import team.themoment.imi.global.exception.GlobalException;
 import team.themoment.imi.global.mapper.ProfileMapper;
@@ -35,15 +38,13 @@ public class ProfileService {
             int studentId = Integer.parseInt(studentInfo.substring(0, 4));
 
             User user = userJpaRepository.getUserByStudentId(studentId)
-                    .orElseThrow(() -> new GlobalException("존재하지 않는 사용자입니다.", HttpStatus.NOT_FOUND));
+                    .orElseThrow(MemberNotFoundException::new);
 
-            if (!user.getName().equals(name)) throw new GlobalException("이름이 일치하지 않습니다.", HttpStatus.NOT_FOUND);
+            if (!user.getName().equals(name)) throw new InvalidUserNameException();
 
             return profileMapper.toProfileResDto(user.getProfile());
-        } catch (IndexOutOfBoundsException e) {
-            throw new GlobalException("너무 짧은 학생정보가 입력되었습니다.", HttpStatus.BAD_REQUEST);
-        } catch (NumberFormatException e) {
-            throw new GlobalException("학번이 잘못 입력되었습니다.", HttpStatus.BAD_REQUEST);
+        } catch (IndexOutOfBoundsException | NumberFormatException e) {
+            throw new InvalidStudentIdException();
         }
     }
 
