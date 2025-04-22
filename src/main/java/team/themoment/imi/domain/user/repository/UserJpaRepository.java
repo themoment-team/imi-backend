@@ -7,7 +7,7 @@ import team.themoment.imi.domain.user.entity.User;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Long> {
+public interface UserJpaRepository extends JpaRepository<User,Long> {
     boolean existsByEmail(String email);
     boolean existsByStudentId(int studentId);
     Optional<User> findByEmail(String email);
