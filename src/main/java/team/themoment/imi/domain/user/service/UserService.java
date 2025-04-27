@@ -34,11 +34,12 @@ public class UserService {
                 .email(email)
                 .studentId(studentId)
                 .password(passwordEncoder.encode(password))
-                .profile(Profile.builder()
-                        .wanted(List.of())
-                        .major("")
-                        .content("아직 자소서를 작성하지 않았습니다.")
-                        .build())
+                .profile(studentId > 2000 ?
+                        Profile.builder()
+                                .wanted(List.of())
+                                .major("")
+                                .content("아직 자소서를 작성하지 않았습니다.")
+                                .build() : null)
                 .build();
 
         userJpaRepository.save(user);
