@@ -28,9 +28,6 @@ public class ProfileService {
 
     public ProfileResDto getCurrentUserProfile() {
         User user = userUtil.getCurrentUser();
-        if (user.getStudentId() > 2000) {
-            throw new FirstGradeRequiredException();
-        }
         return profileMapper.toProfileResDto(user.getProfile());
     }
 
@@ -56,9 +53,6 @@ public class ProfileService {
 
     public void updateProfile(String major, String content, List<String> wanted) {
         User user = userUtil.getCurrentUser();
-        if (user.getStudentId() > 2000) {
-            throw new FirstGradeRequiredException();
-        }
         profileJpaRepository.save(
                 Profile.builder()
                         .id(user.getId())
