@@ -33,7 +33,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 || (request.getRequestURI().startsWith("/profile/") && !request.getRequestURI().equals("/profile/my"))
                 || request.getRequestURI().equals("/profile/list")
                 || request.getRequestURI().equals("/user/join")
-                || request.getRequestURI().equals("/user/checkEmail")
+                || request.getRequestURI().equals("/user/check-email")
                 || request.getRequestURI().startsWith("/club")) {
             filterChain.doFilter(request, response);
             return;
