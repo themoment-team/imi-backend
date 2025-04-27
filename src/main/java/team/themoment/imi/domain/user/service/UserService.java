@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.profile.entity.Profile;
+import team.themoment.imi.domain.profile.exception.FirstGradeRequiredException;
 import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.domain.user.exception.AlreadyMemberException;
 import team.themoment.imi.domain.user.exception.EmailFormatException;
@@ -22,6 +23,9 @@ public class UserService {
     private final UserUtil userUtil;
 
     public void join(String name, String email, int studentId, String password) {
+        if (studentId > 2000 || !email.startsWith("25", 1)) {
+            throw new FirstGradeRequiredException();
+        }
         if (userJpaRepository.existsByEmail(email)) {
             throw new AlreadyMemberException();
         }
@@ -34,12 +38,11 @@ public class UserService {
                 .email(email)
                 .studentId(studentId)
                 .password(passwordEncoder.encode(password))
-                .profile(studentId < 2000 ?
-                        Profile.builder()
-                                .wanted(List.of())
-                                .major("")
-                                .content("아직 자소서를 작성하지 않았습니다.")
-                                .build() : null)
+                .profile(Profile.builder()
+                        .wanted(List.of())
+                        .major("")
+                        .content("아직 자소서를 작성하지 않았습니다.")
+                        .build())
                 .build();
 
         userJpaRepository.save(user);
