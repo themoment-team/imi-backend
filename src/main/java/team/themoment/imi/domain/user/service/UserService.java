@@ -34,7 +34,7 @@ public class UserService {
                 .email(email)
                 .studentId(studentId)
                 .password(passwordEncoder.encode(password))
-                .profile(studentId > 2000 ?
+                .profile(studentId < 2000 ?
                         Profile.builder()
                                 .wanted(List.of())
                                 .major("")
