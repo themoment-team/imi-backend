@@ -32,7 +32,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PutMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<Void> updatePassword(@Valid @RequestBody UpdatePasswordReqDto dto) {
         userService.updatePassword(dto.oldPassword(), dto.newPassword());
         return ResponseEntity.status(HttpStatus.OK).build();
