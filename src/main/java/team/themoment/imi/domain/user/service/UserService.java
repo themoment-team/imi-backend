@@ -53,7 +53,7 @@ public class UserService {
     }
 
     public void updateUserInfo(String name, String email, int studentId) {
-        if (isEmailFormat(email)) {
+        if (!isEmailFormat(email)) {
             throw new EmailFormatException();
         }
 
@@ -81,7 +81,7 @@ public class UserService {
     }
 
     public Boolean checkEmail(String email) {
-        if (isEmailFormat(email)) {
+        if (!isEmailFormat(email)) {
             throw new EmailFormatException();
         }
         return userJpaRepository.existsByEmail(email);
