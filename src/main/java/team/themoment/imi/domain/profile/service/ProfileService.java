@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.profile.data.response.ProfileListResDto;
 import team.themoment.imi.domain.profile.data.response.ProfileResDto;
 import team.themoment.imi.domain.profile.entity.Profile;
-import team.themoment.imi.domain.profile.exception.FirstGradeRequiredException;
 import team.themoment.imi.domain.profile.exception.InvalidStudentIdException;
 import team.themoment.imi.domain.profile.exception.InvalidUserNameException;
 import team.themoment.imi.domain.profile.repository.ProfileJpaRepository;
