@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.profile.entity.Profile;
-import team.themoment.imi.domain.profile.exception.FirstGradeRequiredException;
 import team.themoment.imi.domain.user.entity.User;
-import team.themoment.imi.domain.user.exception.AlreadyMemberException;
+import team.themoment.imi.domain.user.exception.AlreadyMemberEmailException;
+import team.themoment.imi.domain.user.exception.AlreadyMemberStudentIdException;
 import team.themoment.imi.domain.user.exception.EmailFormatException;
 import team.themoment.imi.domain.user.exception.InvalidPasswordException;
 import team.themoment.imi.domain.user.repository.UserJpaRepository;
@@ -23,14 +23,11 @@ public class UserService {
     private final UserUtil userUtil;
 
     public void join(String name, String email, int studentId, String password) {
-        if (studentId > 2000 || !email.startsWith("25", 1)) {
-            throw new FirstGradeRequiredException();
-        }
         if (userJpaRepository.existsByEmail(email)) {
-            throw new AlreadyMemberException();
+            throw new AlreadyMemberEmailException();
         }
         if (userJpaRepository.existsByStudentId(studentId)) {
-            throw new AlreadyMemberException();
+            throw new AlreadyMemberStudentIdException();
         }
 
         User user = User.builder()
