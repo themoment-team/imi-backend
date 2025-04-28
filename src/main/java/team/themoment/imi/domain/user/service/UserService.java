@@ -23,9 +23,6 @@ public class UserService {
     private final UserUtil userUtil;
 
     public void join(String name, String email, int studentId, String password) {
-        if (studentId > 2000 || !email.startsWith("25", 1)) {
-            throw new FirstGradeRequiredException();
-        }
         if (userJpaRepository.existsByEmail(email)) {
             throw new AlreadyMemberException();
         }
