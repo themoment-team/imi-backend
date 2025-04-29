@@ -11,7 +11,7 @@ import team.themoment.imi.domain.profile.entity.Profile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String email;

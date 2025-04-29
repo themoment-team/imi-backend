@@ -16,7 +16,7 @@ public class DomainAuthorizationConfig {
                 .requestMatchers("/profile").permitAll()
 
                 .requestMatchers("/user/join").permitAll()
-                .requestMatchers("/user/checkEmail").permitAll()
+                .requestMatchers("/user/check-email").permitAll()
                 .requestMatchers("/user/password").authenticated()
                 .requestMatchers("/user").authenticated()
 

@@ -5,7 +5,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.profile.entity.Profile;
 import team.themoment.imi.domain.user.entity.User;
-import team.themoment.imi.domain.user.exception.AlreadyMemberException;
+import team.themoment.imi.domain.user.exception.AlreadyMemberEmailException;
+import team.themoment.imi.domain.user.exception.AlreadyMemberStudentIdException;
 import team.themoment.imi.domain.user.exception.EmailFormatException;
 import team.themoment.imi.domain.user.exception.InvalidPasswordException;
 import team.themoment.imi.domain.user.repository.UserJpaRepository;
@@ -23,10 +24,10 @@ public class UserService {
 
     public void join(String name, String email, int studentId, String password) {
         if (userJpaRepository.existsByEmail(email)) {
-            throw new AlreadyMemberException();
+            throw new AlreadyMemberEmailException();
         }
         if (userJpaRepository.existsByStudentId(studentId)) {
-            throw new AlreadyMemberException();
+            throw new AlreadyMemberStudentIdException();
         }
 
         User user = User.builder()
@@ -45,11 +46,11 @@ public class UserService {
     }
 
     private boolean isEmailFormat(String email) {
-        return !email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+        return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     }
 
     public void updateUserInfo(String name, String email, int studentId) {
-        if (isEmailFormat(email)) {
+        if (!isEmailFormat(email)) {
             throw new EmailFormatException();
         }
 
@@ -77,7 +78,7 @@ public class UserService {
     }
 
     public Boolean checkEmail(String email) {
-        if (isEmailFormat(email)) {
+        if (!isEmailFormat(email)) {
             throw new EmailFormatException();
         }
         return userJpaRepository.existsByEmail(email);
