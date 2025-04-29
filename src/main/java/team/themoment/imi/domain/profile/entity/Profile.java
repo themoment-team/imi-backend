@@ -24,6 +24,7 @@ public class Profile {
     @Convert(converter = StringListToStringConverter.class)
     private List<String> wanted;
     private String major;
+    @Column(length = 2400)
     private String content;
 
     @OneToOne(mappedBy = "profile", fetch = FetchType.EAGER)
