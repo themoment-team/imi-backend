@@ -41,9 +41,9 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
+          aws-region: ${{ vars.SERVER_AWS_REGION }}
       - name: Upload to S3
-        run: aws s3 cp --region ${{ vars.AWS_REGION }} ./$GITHUB_SHA.zip s3://${{ secrets.AWS_BUCKET_NAME }}/deploy/$GITHUB_SHA.zip
+        run: aws s3 cp --region ${{ vars.SERVER_AWS_REGION }} ./$GITHUB_SHA.zip s3://${{ secrets.AWS_BUCKET_NAME }}/deploy/$GITHUB_SHA.zip
       - name: 🚀 Deploy to EC2 with CodeDeploy
         run: aws deploy create-deployment
           --application-name imi-codedeploy
