@@ -11,7 +11,7 @@ on:
       - closed
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true
+#    if: github.event.pull_request.merged == true
     env:
       ENV_PATH: ./src/main/resources/.env
     runs-on: ubuntu-latest
