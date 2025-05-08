@@ -1,19 +1,12 @@
 #!/bin/bash
+set -e
 
-IMAGE_NAME=imi-img
-CONTAINER_NAME=imi-container
-DOCKERFILE_NAME=Dockerfile
+COMPOSE_FILE=compose.yaml
 
-CURRENT_CONTAINER_ID=$(docker ps -a -q -f name=$CONTAINER_NAME)
+echo "1) 기존 컨테이너 중지 및 삭제"
+docker compose -f $COMPOSE_FILE down --rmi all --volumes --remove-orphans
 
-if [ ! -z "$CURRENT_CONTAINER_ID" ]
-then
-  echo "현재 구동 중인 컨테이너가 있습니다. 중지하고 삭제합니다."
-  docker stop $CONTAINER_NAME || true
-  docker rm $CONTAINER_NAME
-fi
+echo "2) 이미지 빌드 및 컨테이너 실행"
+docker compose -f $COMPOSE_FILE up -d --build
 
-cd /home/ubuntu
-docker build -t $IMAGE_NAME -f $DOCKERFILE_NAME .
-
-docker run -d --name $CONTAINER_NAME -p 8080:8080 --restart always $IMAGE_NAME
+echo "3) deploy script end"
