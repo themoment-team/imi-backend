@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @RedisHash(value = "refresh_token")
 @Builder
 @Getter
-public class RefreshTokenRedisEntity {
+public class RefreshToken {
     @Id
     private String refreshToken;
     @Indexed
