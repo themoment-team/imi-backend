@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import team.themoment.imi.global.security.exception.ExpiredAccessTokenException;
 import team.themoment.imi.global.security.exception.InvalidAccessTokenException;
 import team.themoment.imi.global.security.jwt.data.TokenDto;
-import team.themoment.imi.global.security.jwt.entity.RefreshTokenRedisEntity;
+import team.themoment.imi.global.security.jwt.entity.RefreshToken;
 import team.themoment.imi.global.security.jwt.repository.RefreshTokenRedisRepository;
 
 import javax.crypto.SecretKey;
@@ -53,7 +53,7 @@ public class JwtService {
                 .claim("jti", UUID.randomUUID().toString())
                 .signWith(key)
                 .compact();
-        refreshTokenRedisRepository.save(RefreshTokenRedisEntity.builder()
+        refreshTokenRedisRepository.save(RefreshToken.builder()
                 .refreshToken(token)
                 .userId(userId)
                 .expiration(expirationDate.getTime())

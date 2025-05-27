@@ -5,11 +5,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.profile.entity.Profile;
 import team.themoment.imi.domain.user.entity.User;
-import team.themoment.imi.domain.user.exception.AlreadyMemberEmailException;
-import team.themoment.imi.domain.user.exception.AlreadyMemberStudentIdException;
-import team.themoment.imi.domain.user.exception.EmailFormatException;
-import team.themoment.imi.domain.user.exception.InvalidPasswordException;
+import team.themoment.imi.domain.user.exception.*;
 import team.themoment.imi.domain.user.repository.UserJpaRepository;
+import team.themoment.imi.global.email.repository.AuthenticationRedisRepository;
 import team.themoment.imi.global.utils.UserUtil;
 
 import java.util.List;
@@ -21,6 +19,7 @@ public class UserService {
     private final UserJpaRepository userJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserUtil userUtil;
+    private final AuthenticationRedisRepository authenticationRedisRepository;
 
     public void join(String name, String email, int studentId, String password) {
         if (userJpaRepository.existsByEmail(email)) {
@@ -29,7 +28,12 @@ public class UserService {
         if (userJpaRepository.existsByStudentId(studentId)) {
             throw new AlreadyMemberStudentIdException();
         }
-
+        authenticationRedisRepository.findById(email)
+                .ifPresent(authentication -> {
+                    if (!authentication.isVerified()) {
+                        throw new EmailNotVerifiedException();
+                    }
+                });
         User user = User.builder()
                 .name(name)
                 .email(email)
