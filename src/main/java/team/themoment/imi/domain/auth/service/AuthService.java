@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.auth.data.response.LoginResDto;
+import team.themoment.imi.domain.auth.exception.AuthCodeExpiredException;
 import team.themoment.imi.domain.auth.exception.InvalidAuthCodeException;
 import team.themoment.imi.domain.auth.exception.InvalidRefreshTokenException;
 import team.themoment.imi.domain.auth.exception.SignInFailedException;
@@ -90,13 +91,15 @@ public class AuthService {
         AuthCode savedAuthCode = authCodeRedisRepository.findByAuthCode(String.valueOf(authCode))
                 .orElseThrow(InvalidAuthCodeException::new);
         String email = savedAuthCode.getEmail();
-        Authentication authentication = Authentication.builder()
+        Authentication authentication = authenticationRedisRepository.findById(email)
+                .orElseThrow(AuthCodeExpiredException::new);
+        Authentication updatedAuthentication = Authentication.builder()
                 .email(email)
+                .attempts(authentication.getAttempts())
                 .verified(true)
-                .attempts(0)
-                .expiration(AUTH_CODE_EXPIRATION_TIME)
+                .expiration(authentication.getExpiration())
                 .build();
-        authenticationRedisRepository.save(authentication);
+        authenticationRedisRepository.save(updatedAuthentication);
         authCodeRedisRepository.deleteById(email);
     }
 
