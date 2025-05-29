@@ -75,6 +75,7 @@ public class AuthService {
         AuthCode authCodeEntity = AuthCode.builder()
                 .email(email)
                 .authCode(authCode)
+                .expiration(AUTH_CODE_EXPIRATION_TIME)
                 .build();
         authCodeRedisRepository.save(authCodeEntity);
         authentication = Authentication.builder()
