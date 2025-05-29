@@ -7,6 +7,7 @@ import team.themoment.imi.domain.profile.entity.Profile;
 import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.domain.user.exception.*;
 import team.themoment.imi.domain.user.repository.UserJpaRepository;
+import team.themoment.imi.global.email.entity.Authentication;
 import team.themoment.imi.global.email.repository.AuthenticationRedisRepository;
 import team.themoment.imi.global.utils.UserUtil;
 
@@ -28,12 +29,11 @@ public class UserService {
         if (userJpaRepository.existsByStudentId(studentId)) {
             throw new AlreadyMemberStudentIdException();
         }
-        authenticationRedisRepository.findById(email)
-                .ifPresent(authentication -> {
-                    if (!authentication.isVerified()) {
-                        throw new EmailNotVerifiedException();
-                    }
-                });
+        Authentication authentication = authenticationRedisRepository.findById(email)
+                .orElseThrow(EmailNotVerifiedException::new);
+        if (!authentication.isVerified()) {
+            throw new EmailNotVerifiedException();
+        }
         User user = User.builder()
                 .name(name)
                 .email(email)
