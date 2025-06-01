@@ -40,7 +40,7 @@ public class AuthController {
 
     @PostMapping("/verify-email")
     public ResponseEntity<Void> verifyEmail(@Valid @RequestBody VerifyEmailReqDto reqDto) {
-        authService.verifyAuthCode(reqDto.authCode());
+        authService.verifyAuthCode(reqDto.email(), reqDto.authCode());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
