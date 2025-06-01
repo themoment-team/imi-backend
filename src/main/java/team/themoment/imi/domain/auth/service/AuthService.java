@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.auth.data.response.LoginResDto;
-import team.themoment.imi.domain.auth.exception.AuthCodeExpiredException;
 import team.themoment.imi.domain.auth.exception.InvalidAuthCodeException;
 import team.themoment.imi.domain.auth.exception.InvalidRefreshTokenException;
 import team.themoment.imi.domain.auth.exception.SignInFailedException;
@@ -64,11 +63,12 @@ public class AuthService {
         Authentication authentication = authenticationRedisRepository.findById(email)
                 .orElse(Authentication.builder()
                         .email(email)
-                        .attempts(0)
+                        .sendAttempt(0)
+                        .verificationAttempt(0)
                         .verified(false)
                         .expiration(AUTH_CODE_EXPIRATION_TIME)
                         .build());
-        if (authentication.getAttempts() >= MAX_AUTH_ATTEMPTS) {
+        if (authentication.getSendAttempt() >= MAX_AUTH_ATTEMPTS) {
             throw new ExcessiveAuthAttemptsException();
         }
         String authCode = generateRandomCode();
@@ -80,7 +80,8 @@ public class AuthService {
         authCodeRedisRepository.save(authCodeEntity);
         authentication = Authentication.builder()
                 .email(authentication.getEmail())
-                .attempts(authentication.getAttempts() + 1)
+                .sendAttempt(authentication.getSendAttempt() + 1)
+                .verificationAttempt(authentication.getVerificationAttempt())
                 .verified(false)
                 .expiration(AUTH_CODE_EXPIRATION_TIME)
                 .build();
@@ -88,17 +89,37 @@ public class AuthService {
         emailService.sendAuthenticationEmail(email, authCode);
     }
 
-    public void verifyAuthCode(int authCode) {
-        AuthCode savedAuthCode = authCodeRedisRepository.findByAuthCode(String.valueOf(authCode))
-                .orElseThrow(InvalidAuthCodeException::new);
-        String email = savedAuthCode.getEmail();
+    public void verifyAuthCode(String email, int authCode) {
         Authentication authentication = authenticationRedisRepository.findById(email)
-                .orElseThrow(AuthCodeExpiredException::new);
+                .orElse(Authentication.builder()
+                        .email(email)
+                        .sendAttempt(0)
+                        .verificationAttempt(0)
+                        .verified(false)
+                        .expiration(AUTH_CODE_EXPIRATION_TIME)
+                        .build());
+        if (authentication.getVerificationAttempt() >= MAX_AUTH_ATTEMPTS) {
+            throw new ExcessiveAuthAttemptsException();
+        }
+        AuthCode storedAuthCode = authCodeRedisRepository.findById(email)
+                .orElse(null);
+        if (storedAuthCode == null || !storedAuthCode.getAuthCode().equals(String.valueOf(authCode))) {
+            Authentication updatedAuthentication = Authentication.builder()
+                    .email(email)
+                    .sendAttempt(authentication.getSendAttempt())
+                    .verificationAttempt(authentication.getVerificationAttempt() + 1)
+                    .verified(false)
+                    .expiration(authentication.getExpiration())
+                    .build();
+            authenticationRedisRepository.save(updatedAuthentication);
+            throw new InvalidAuthCodeException();
+        }
         Authentication updatedAuthentication = Authentication.builder()
                 .email(email)
-                .attempts(authentication.getAttempts())
+                .sendAttempt(authentication.getSendAttempt())
+                .verificationAttempt(authentication.getVerificationAttempt())
                 .verified(true)
-                .expiration(authentication.getExpiration())
+                .expiration(AUTH_CODE_EXPIRATION_TIME)
                 .build();
         authenticationRedisRepository.save(updatedAuthentication);
         authCodeRedisRepository.deleteById(email);
