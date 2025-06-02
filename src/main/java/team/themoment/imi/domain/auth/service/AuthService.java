@@ -33,7 +33,8 @@ public class AuthService {
     private final EmailService emailService;
 
     private static final int MAX_AUTH_ATTEMPTS = 5;
-    private static final long AUTH_CODE_EXPIRATION_TIME = 5 * 60 * 1000; // 5분
+    private static final long AUTH_CODE_EXPIRATION_TIME = 5 * 60 * 1000; // 5분 (밀리초)
+    private static final long AUTH_RATE_LIMIT_TIME = 5 * 60; // 5분 (초)
 
     public LoginResDto login(String email, String password) {
         User user = userJpaRepository.findByEmail(email)
@@ -66,7 +67,7 @@ public class AuthService {
                         .sendAttempt(0)
                         .verificationAttempt(0)
                         .verified(false)
-                        .expiration(AUTH_CODE_EXPIRATION_TIME)
+                        .expiration(AUTH_RATE_LIMIT_TIME)
                         .build());
         if (authentication.getSendAttempt() >= MAX_AUTH_ATTEMPTS) {
             throw new ExcessiveAuthAttemptsException();
@@ -83,7 +84,7 @@ public class AuthService {
                 .sendAttempt(authentication.getSendAttempt() + 1)
                 .verificationAttempt(authentication.getVerificationAttempt())
                 .verified(false)
-                .expiration(AUTH_CODE_EXPIRATION_TIME)
+                .expiration(AUTH_RATE_LIMIT_TIME)
                 .build();
         authenticationRedisRepository.save(authentication);
         emailService.sendAuthenticationEmail(email, authCode);
@@ -96,7 +97,7 @@ public class AuthService {
                         .sendAttempt(0)
                         .verificationAttempt(0)
                         .verified(false)
-                        .expiration(AUTH_CODE_EXPIRATION_TIME)
+                        .expiration(AUTH_RATE_LIMIT_TIME)
                         .build());
         if (authentication.getVerificationAttempt() >= MAX_AUTH_ATTEMPTS) {
             throw new ExcessiveAuthAttemptsException();
@@ -109,7 +110,7 @@ public class AuthService {
                     .sendAttempt(authentication.getSendAttempt())
                     .verificationAttempt(authentication.getVerificationAttempt() + 1)
                     .verified(false)
-                    .expiration(authentication.getExpiration())
+                    .expiration(AUTH_RATE_LIMIT_TIME)
                     .build();
             authenticationRedisRepository.save(updatedAuthentication);
             throw new InvalidAuthCodeException();
@@ -119,7 +120,7 @@ public class AuthService {
                 .sendAttempt(authentication.getSendAttempt())
                 .verificationAttempt(authentication.getVerificationAttempt())
                 .verified(true)
-                .expiration(AUTH_CODE_EXPIRATION_TIME)
+                .expiration(AUTH_RATE_LIMIT_TIME)
                 .build();
         authenticationRedisRepository.save(updatedAuthentication);
         authCodeRedisRepository.deleteById(email);
