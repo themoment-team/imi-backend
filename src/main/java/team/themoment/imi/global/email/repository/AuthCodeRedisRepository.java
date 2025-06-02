@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface AuthCodeRedisRepository extends CrudRepository<AuthCode, String> {
-    Optional<AuthCode> findByAuthCode(String authCode);
 }

@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class Authentication {
     @Id
     private String email;
-    private int attempts;
+    private int sendAttempt;
+    private int verificationAttempt;
     private boolean verified;
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long expiration;
