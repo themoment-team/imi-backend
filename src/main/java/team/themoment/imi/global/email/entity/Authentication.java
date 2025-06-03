@@ -17,6 +17,6 @@ public class Authentication {
     private int sendAttempt;
     private int verificationAttempt;
     private boolean verified;
-    @TimeToLive(unit = TimeUnit.MILLISECONDS)
+    @TimeToLive(unit = TimeUnit.SECONDS)
     private Long expiration;
 }
