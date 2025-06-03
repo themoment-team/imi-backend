@@ -33,7 +33,6 @@ public class AuthService {
     private final EmailService emailService;
 
     private static final int MAX_AUTH_ATTEMPTS = 5;
-    private static final long AUTH_CODE_EXPIRATION_TIME = 5 * 60 * 1000; // 5분 (밀리초)
     private static final long AUTH_RATE_LIMIT_TIME = 5 * 60; // 5분 (초)
 
     public LoginResDto login(String email, String password) {
@@ -61,14 +60,16 @@ public class AuthService {
     }
 
     public void sendEmail(String email) {
-        Authentication authentication = authenticationRedisRepository.findById(email)
-                .orElse(Authentication.builder()
-                        .email(email)
-                        .sendAttempt(0)
-                        .verificationAttempt(0)
-                        .verified(false)
-                        .expiration(AUTH_RATE_LIMIT_TIME)
-                        .build());
+        Authentication authentication = authenticationRedisRepository.findById(email).orElse(null);
+        if (authentication == null) {
+            authentication = Authentication.builder()
+                    .email(email)
+                    .sendAttempt(0)
+                    .verificationAttempt(0)
+                    .verified(false)
+                    .expiration(AUTH_RATE_LIMIT_TIME)
+                    .build();
+        }
         if (authentication.getSendAttempt() >= MAX_AUTH_ATTEMPTS) {
             throw new ExcessiveAuthAttemptsException();
         }
@@ -76,7 +77,7 @@ public class AuthService {
         AuthCode authCodeEntity = AuthCode.builder()
                 .email(email)
                 .authCode(authCode)
-                .expiration(AUTH_CODE_EXPIRATION_TIME)
+                .expiration(AUTH_RATE_LIMIT_TIME)
                 .build();
         authCodeRedisRepository.save(authCodeEntity);
         authentication = Authentication.builder()
@@ -91,14 +92,16 @@ public class AuthService {
     }
 
     public void verifyAuthCode(String email, int authCode) {
-        Authentication authentication = authenticationRedisRepository.findById(email)
-                .orElse(Authentication.builder()
-                        .email(email)
-                        .sendAttempt(0)
-                        .verificationAttempt(0)
-                        .verified(false)
-                        .expiration(AUTH_RATE_LIMIT_TIME)
-                        .build());
+        Authentication authentication = authenticationRedisRepository.findById(email).orElse(null);
+        if (authentication == null) {
+            authentication = Authentication.builder()
+                    .email(email)
+                    .sendAttempt(0)
+                    .verificationAttempt(0)
+                    .verified(false)
+                    .expiration(AUTH_RATE_LIMIT_TIME)
+                    .build();
+        }
         if (authentication.getVerificationAttempt() >= MAX_AUTH_ATTEMPTS) {
             throw new ExcessiveAuthAttemptsException();
         }

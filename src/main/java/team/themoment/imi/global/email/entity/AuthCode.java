@@ -17,6 +17,6 @@ public class AuthCode {
     private String email;
     @Indexed
     private String authCode;
-    @TimeToLive(unit = TimeUnit.MILLISECONDS)
+    @TimeToLive(unit = TimeUnit.SECONDS)
     private Long expiration;
 }
