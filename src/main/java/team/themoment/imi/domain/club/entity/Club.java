@@ -1,9 +1,6 @@
 package team.themoment.imi.domain.club.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
@@ -16,5 +13,6 @@ public class Club {
     private String leader;
     private String mainContent;
     private String notionUrl;
+    @Column(columnDefinition = "VARCHAR(512)")
     private String iconUrl;
 }
