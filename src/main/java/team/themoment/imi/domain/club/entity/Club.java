@@ -19,4 +19,5 @@ public class Club {
     private String notionUrl;
     @Column(columnDefinition = "VARCHAR(512)")
     private String iconUrl;
+    private Boolean isFunctionalClub;
 }
