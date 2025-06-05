@@ -34,7 +34,7 @@ public class UserController {
 
     @PatchMapping("/password")
     public ResponseEntity<Void> updatePassword(@Valid @RequestBody UpdatePasswordReqDto dto) {
-        userService.updatePassword(dto.oldPassword(), dto.newPassword());
+        userService.updatePassword(dto.email(), dto.newPassword());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

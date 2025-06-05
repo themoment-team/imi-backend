@@ -71,11 +71,11 @@ public class UserService {
         );
     }
 
-    public void updatePassword(String oldPassword, String newPassword) {
+    public void updatePassword(String email, String newPassword) {
         User user = userUtil.getCurrentUser();
-
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new InvalidPasswordException();
+        if (authenticationRedisRepository.findById(email)
+                .orElseThrow(EmailNotVerifiedException::new).isVerified()) {
+            throw new EmailNotVerifiedException();
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userJpaRepository.save(user);
