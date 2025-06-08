@@ -49,15 +49,7 @@ public class UserService {
         userJpaRepository.save(user);
     }
 
-    private boolean isEmailFormat(String email) {
-        return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
-    }
-
     public void updateUserInfo(String name, String email, int studentId) {
-        if (!isEmailFormat(email)) {
-            throw new EmailFormatException();
-        }
-
         User user = userUtil.getCurrentUser();
 
         userJpaRepository.save(
@@ -82,9 +74,6 @@ public class UserService {
     }
 
     public Boolean checkEmail(String email) {
-        if (!isEmailFormat(email)) {
-            throw new EmailFormatException();
-        }
         return userJpaRepository.existsByEmail(email);
     }
 }
