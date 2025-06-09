@@ -66,7 +66,7 @@ public class UserService {
     public void updatePassword(String email, String newPassword) {
         User user = userJpaRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
-        if (authenticationRedisRepository.findById(email)
+        if (!authenticationRedisRepository.findById(email)
                 .orElseThrow(EmailNotVerifiedException::new).isVerified()) {
             throw new EmailNotVerifiedException();
         }
