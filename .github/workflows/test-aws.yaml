@@ -1,0 +1,64 @@
+name: AWS Credentials Test
+
+on:
+  # 수동으로 워크플로우 실행 가능
+  workflow_dispatch:
+
+  # 테스트용 푸시 트리거 (선택적)
+  push:
+    branches:
+      - feat/cicd  # 필요한 브랜치로 변경하세요
+
+jobs:
+  test-aws-credentials:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 방법 1: aws-actions/configure-aws-credentials 사용
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      # 기본 테스트: 호출자 ID 확인
+      - name: Test AWS authentication
+        run: |
+          echo "Checking AWS caller identity..."
+          aws sts get-caller-identity
+
+      # S3 버킷 목록 확인
+      - name: List S3 buckets
+        run: |
+          echo "Listing S3 buckets..."
+          aws s3 ls
+
+      # 대상 S3 버킷 확인 (있는 경우)
+      - name: Check target S3 bucket
+        run: |
+          echo "Checking target S3 bucket..."
+          if aws s3 ls s3://${{ secrets.AWS_BUCKET_NAME }} &>/dev/null; then
+            echo "Target bucket exists and is accessible!"
+            aws s3 ls s3://${{ secrets.AWS_BUCKET_NAME }} --recursive | head -n 5
+          else
+            echo "Cannot access target bucket or it doesn't exist"
+          fi
+
+      # CodeDeploy 앱 확인
+      - name: Check CodeDeploy apps
+        run: |
+          echo "Listing CodeDeploy applications..."
+          aws deploy list-applications
+          
+          echo "Checking if target CodeDeploy app exists..."
+          if aws deploy get-application --application-name imi-codedeploy &>/dev/null; then
+            echo "CodeDeploy application 'imi-codedeploy' exists!"
+          
+            echo "Listing deployment groups..."
+            aws deploy list-deployment-groups --application-name imi-codedeploy
+          else
+            echo "CodeDeploy application 'imi-codedeploy' not found or not accessible"
+          fi
