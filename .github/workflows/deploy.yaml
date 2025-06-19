@@ -2,13 +2,8 @@ name: deploy
 on:
   push:
     branches:
-      - feat/cicd
-  pull_request:
-    branches:
       - master
-      - release/**
-    types:
-      - closed
+      - release/*
 jobs:
   deploy:
     environment:
