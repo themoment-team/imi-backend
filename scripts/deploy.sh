@@ -1,7 +1,12 @@
 #!/bin/bash
 set -e
+cd /home/ec2-user
 
 COMPOSE_FILE=compose.yaml
+
+echo "현재 작업 디렉토리: $(pwd)"
+echo "파일 목록 확인:"
+ls -la
 
 echo "1) Docker 권한 확인"
 sudo chmod 666 /var/run/docker.sock
