@@ -11,6 +11,7 @@ on:
 
 jobs:
   test-aws-env:
+    environment: Deploy Environment
     runs-on: ubuntu-latest
     # 환경 변수로 AWS 자격 증명 직접 설정
     env:
