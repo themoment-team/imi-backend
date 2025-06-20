@@ -1,14 +1,14 @@
 services:
-  mysql:
-    image: 'mysql:latest'
-    environment:
-      - 'MYSQL_DATABASE=imi'
-      - 'MYSQL_PASSWORD=1234'
-      - 'MYSQL_ROOT_PASSWORD=1234'
-      - 'MYSQL_USER=user'
-    ports:
-      - '3306'
   redis:
+    container_name: 'imi-redis'
     image: 'redis:latest'
     ports:
-      - '6379'
+      - '6379:6379'
+  server:
+    container_name: 'imi-backend'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /deploy
+    ports:
+      - "8080:8080"
