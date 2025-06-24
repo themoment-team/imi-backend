@@ -2,7 +2,7 @@
 set -e
 cd /home/ec2-user
 
-COMPOSE_FILE=compose.yaml
+COMPOSE_FILE=compose.deploy.yaml
 
 echo "현재 작업 디렉토리: $(pwd)"
 echo "파일 목록 확인:"
