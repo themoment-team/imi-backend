@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record UpdateProfileReqDto(
-        @NotNull String major,
+        @NotNull @Size(max = 100) String major,
         @NotNull @Size(max = 2400) String content,
         @NotEmpty List<String> wanted
 ) {
