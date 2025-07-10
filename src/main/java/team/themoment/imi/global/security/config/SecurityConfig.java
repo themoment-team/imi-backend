@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfigurationSource;
 import team.themoment.imi.global.security.filter.JwtAuthorizationFilter;
 import team.themoment.imi.global.security.jwt.service.JwtService;
 
@@ -27,12 +26,13 @@ public class SecurityConfig {
 
     private final JwtService jwtService;
     private final DomainAuthorizationConfig domainAuthorizationConfig;
+    private final CorsConfig corsConfig;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         domainAuthorizationConfig.configureAuthorization(http);
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
