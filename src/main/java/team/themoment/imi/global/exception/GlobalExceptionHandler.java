@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.rmi.UnexpectedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +70,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleUnexpectedException(UnexpectedException ex) {
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         log.error("UnexpectedException Occur : ", ex);
         return ResponseEntity.status(HttpStatus.CONFLICT.value())
                 .body(new ErrorResponse("Data integrity violation has occurred")
