@@ -2,6 +2,7 @@ package team.themoment.imi.global.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -66,5 +67,13 @@ public class GlobalExceptionHandler {
         log.trace("HttpMessageNotReadableException Details : ", ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error("UnexpectedException Occur : ", ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT.value())
+                .body(new ErrorResponse("Data integrity violation has occurred")
+                );
     }
 }
