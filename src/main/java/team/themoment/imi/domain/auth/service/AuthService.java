@@ -1,6 +1,7 @@
 package team.themoment.imi.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team.themoment.imi.domain.auth.data.response.LoginResDto;
@@ -21,6 +22,7 @@ import team.themoment.imi.global.security.jwt.service.JwtService;
 import java.util.Date;
 import java.util.Random;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -48,13 +50,19 @@ public class AuthService {
     }
 
     public LoginResDto refresh(String refreshToken) {
-        if (jwtService.validateRefreshToken(refreshToken)) {
+        try {
+            if (!jwtService.validateRefreshToken(refreshToken)) {
+                log.warn("Refresh token not found in Redis");
+                throw new InvalidRefreshTokenException();
+            }
             String userId = jwtService.extractUserId(refreshToken);
             TokenDto accessToken = jwtService.issueAccessToken(userId);
             String newRefreshToken = jwtService.issueRefreshToken(userId);
             jwtService.deleteRefreshToken(refreshToken);
+            log.debug("Successfully refreshed tokens for user: {}", userId);
             return new LoginResDto(accessToken.token(), newRefreshToken, accessToken.expiresIn(), System.currentTimeMillis());
-        } else {
+        } catch (Exception e) {
+            log.error("Failed to refresh token: {}", e.getMessage());
             throw new InvalidRefreshTokenException();
         }
     }

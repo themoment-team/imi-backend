@@ -63,7 +63,11 @@ public class JwtService {
     }
 
     public String extractUserId(String token) {
-        return parseClaims(token).getSubject();
+        try {
+            return parseClaims(token).getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
     }
 
     public Boolean validateToken(String token) {
@@ -86,6 +90,11 @@ public class JwtService {
     }
 
     private Claims parseClaims(String token) {
-        return Jwts.parser().verifyWith(key).clock(Date::new).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser()
+                .verifyWith(key)
+                .clockSkewSeconds(60)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
