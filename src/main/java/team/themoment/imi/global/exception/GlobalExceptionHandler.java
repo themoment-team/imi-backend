@@ -1,6 +1,8 @@
 package team.themoment.imi.global.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,6 +25,14 @@ public class GlobalExceptionHandler {
         log.warn("ExpectedException : {} ", ex.getMessage());
         log.trace("ExpectedException Details : ", ex);
         return ResponseEntity.status(ex.getHttpStatus().value()).body(ErrorResponse.of(ex));
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> expiredJwtException(ExpiredJwtException ex) {
+        log.warn("JWT Token Expired: {} ", ex.getMessage());
+        log.trace("JWT Token Expired Details : ", ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value())
+                .body(new ErrorResponse("토큰이 만료되었습니다. 다시 로그인해주세요."));
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -57,5 +67,13 @@ public class GlobalExceptionHandler {
         log.trace("HttpMessageNotReadableException Details : ", ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error("UnexpectedException Occur : ", ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT.value())
+                .body(new ErrorResponse("Data integrity violation has occurred")
+                );
     }
 }

@@ -1,10 +1,12 @@
 package team.themoment.imi.global.security.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +23,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
@@ -29,41 +32,54 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (request.getRequestURI().startsWith("/auth")
-                || (request.getRequestURI().startsWith("/profile/") && !request.getRequestURI().equals("/profile/my"))
-                || request.getRequestURI().equals("/profile/list")
-                || request.getRequestURI().equals("/user/join")
-                || request.getRequestURI().equals("/user/check-email")
-                || request.getRequestURI().startsWith("/club")) {
+        if (shouldSkipFilter(request)) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-            try {
-                if (jwtService.validateToken(token)) {
-                    String username = jwtService.extractUserId(token);
-                    if (username != null) {
-                        UserDetails userDetails = new CustomUserDetails(User.builder().email(username).build());
-                        UsernamePasswordAuthenticationToken authentication =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                }
-            } catch (ExpiredAccessTokenException e) {
-                setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token has expired");
-                return;
-            } catch (InvalidAccessTokenException e) {
-                setErrorResponse(response, HttpStatus.UNAUTHORIZED, "Invalid JWT token");
-                return;
-            }
-        } else {
+        String token = extractTokenFromHeader(request);
+        if (token == null) {
             setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token is missing");
             return;
         }
+        try {
+            if (jwtService.validateToken(token)) {
+                String username = jwtService.extractUserId(token);
+                if (username != null) {
+                    UserDetails userDetails = new CustomUserDetails(User.builder().email(username).build());
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+        } catch (ExpiredAccessTokenException | ExpiredJwtException e) {
+            log.debug("Access token expired for request: {}", request.getRequestURI());
+            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token has expired");
+            return;
+        } catch (Exception e) {
+            log.debug("Invalid access token for request: {}", request.getRequestURI());
+            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+            return;
+        }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean shouldSkipFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return uri.startsWith("/auth")
+                || (uri.startsWith("/profile/") && !uri.equals("/profile/my"))
+                || uri.equals("/profile/list")
+                || uri.equals("/user/join")
+                || uri.equals("/user/check-email")
+                || uri.equals("/user/password")
+                || uri.startsWith("/club");
+    }
+
+    private String extractTokenFromHeader(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
     }
 
     private void setErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {

@@ -33,11 +33,14 @@ public class JwtService {
     }
 
     public TokenDto issueAccessToken(String userId) {
-        Date expirationDate = new Date(System.currentTimeMillis() + accessTokenExpiration);
+        long currentTimeMillis = System.currentTimeMillis();
+        long currentTimeSeconds = currentTimeMillis / 1000;
+        Date expirationDate = new Date(currentTimeMillis + (accessTokenExpiration * 1000L));
+        long expirationSeconds = expirationDate.getTime() / 1000;
         String token = Jwts.builder()
                 .claim("sub", userId)
-                .claim("iat", System.currentTimeMillis() / 1000)
-                .claim("exp", expirationDate.getTime() / 1000)
+                .claim("iat", currentTimeSeconds)
+                .claim("exp", expirationSeconds)
                 .claim("jti", UUID.randomUUID().toString())
                 .signWith(key)
                 .compact();
@@ -45,11 +48,14 @@ public class JwtService {
     }
 
     public String issueRefreshToken(String userId) {
-        Date expirationDate = new Date(System.currentTimeMillis() + refreshTokenExpiration);
+        long currentTimeMillis = System.currentTimeMillis();
+        long currentTimeSeconds = currentTimeMillis / 1000;
+        Date expirationDate = new Date(currentTimeMillis + (refreshTokenExpiration * 1000L));
+        long expirationSeconds = expirationDate.getTime() / 1000;
         String token = Jwts.builder()
                 .claim("sub", userId)
-                .claim("iat", System.currentTimeMillis() / 1000)
-                .claim("exp", expirationDate.getTime() / 1000)
+                .claim("iat", currentTimeSeconds)
+                .claim("exp", expirationSeconds)
                 .claim("jti", UUID.randomUUID().toString())
                 .signWith(key)
                 .compact();
@@ -63,7 +69,11 @@ public class JwtService {
     }
 
     public String extractUserId(String token) {
-        return parseClaims(token).getSubject();
+        try {
+            return parseClaims(token).getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
     }
 
     public Boolean validateToken(String token) {
@@ -86,6 +96,11 @@ public class JwtService {
     }
 
     private Claims parseClaims(String token) {
-        return Jwts.parser().verifyWith(key).clock(Date::new).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser()
+                .verifyWith(key)
+                .clockSkewSeconds(60)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
