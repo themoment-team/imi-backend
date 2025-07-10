@@ -49,15 +49,7 @@ public class UserService {
         userJpaRepository.save(user);
     }
 
-    private boolean isEmailFormat(String email) {
-        return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
-    }
-
     public void updateUserInfo(String name, String email, int studentId) {
-        if (!isEmailFormat(email)) {
-            throw new EmailFormatException();
-        }
-
         User user = userUtil.getCurrentUser();
 
         userJpaRepository.save(
@@ -71,20 +63,18 @@ public class UserService {
         );
     }
 
-    public void updatePassword(String oldPassword, String newPassword) {
-        User user = userUtil.getCurrentUser();
-
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new InvalidPasswordException();
+    public void updatePassword(String email, String newPassword) {
+        User user = userJpaRepository.findByEmail(email)
+                .orElseThrow(MemberNotFoundException::new);
+        if (!authenticationRedisRepository.findById(email)
+                .orElseThrow(EmailNotVerifiedException::new).isVerified()) {
+            throw new EmailNotVerifiedException();
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userJpaRepository.save(user);
     }
 
     public Boolean checkEmail(String email) {
-        if (!isEmailFormat(email)) {
-            throw new EmailFormatException();
-        }
         return userJpaRepository.existsByEmail(email);
     }
 }

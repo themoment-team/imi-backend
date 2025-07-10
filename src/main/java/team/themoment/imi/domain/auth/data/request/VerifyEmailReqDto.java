@@ -5,7 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record VerifyEmailReqDto(
-        @NotBlank @Pattern(regexp = "^s\\d{5}@(gsm\\.hs\\.kr|gsmhs\\.kr)$") String email,
-        @NotNull int authCode
+        @NotBlank @Pattern(regexp = "^s\\d{5}@gsm\\.hs\\.kr$"
+                , message = "유효한 이메일 형식이 아닙니다.")
+        String email,
+        @NotNull(message = "인증번호는 필수입니다.")
+        int authCode
 ) {
 }
