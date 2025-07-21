@@ -1,6 +1,7 @@
 package team.themoment.imi.domain.user.data.request;
 
 import jakarta.validation.constraints.*;
+import team.themoment.imi.global.utils.ValidStudentId;
 
 public record CreateUserReqDto(
         @NotBlank(message = "이름을 입력해주세요.")
@@ -10,8 +11,7 @@ public record CreateUserReqDto(
                 , message = "이메일 형식이 올바르지 않습니다.")
         String email,
         @NotNull(message = "학번을 입력해주세요.")
-        @Min(value = 1101, message = "학번을 다시 확인해주세요.")
-        @Max(value = 3418, message = "학번을 다시 확인해주세요.")
+        @ValidStudentId(message = "유효하지 않은 학번입니다.")
         Integer studentId,
         @NotBlank(message = "비밀번호를 입력해주세요.")
         String password
