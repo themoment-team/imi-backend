@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.global.security.auth.CustomUserDetails;
@@ -28,6 +29,23 @@ import java.util.Map;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+    private final String[] excludedPaths = {
+            "/auth",
+            "/profile/",
+            "/profile/list",
+            "/user/join",
+            "/user/check-email",
+            "/user/password",
+            "/club"
+    };
+    private final String[] excludedExactPaths = {
+            "/profile/my"
+    };
+
+    private final String AUTHORIZATION_HEADER = "Authorization";
+    private final String BEARER_PREFIX = "Bearer ";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -38,7 +56,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         String token = extractTokenFromHeader(request);
         if (token == null) {
-            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token is missing");
+            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT 토큰이 없습니다.");
             return;
         }
         try {
@@ -53,11 +71,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         } catch (ExpiredAccessTokenException | ExpiredJwtException e) {
             log.debug("Access token expired for request: {}", request.getRequestURI());
-            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token has expired");
+            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT 토큰이 만료되었습니다.");
             return;
         } catch (Exception e) {
             log.debug("Invalid access token for request: {}", request.getRequestURI());
-            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다.");
             return;
         }
         filterChain.doFilter(request, response);
@@ -65,18 +83,22 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        return uri.startsWith("/auth")
-                || (uri.startsWith("/profile/") && !uri.equals("/profile/my"))
-                || uri.equals("/profile/list")
-                || uri.equals("/user/join")
-                || uri.equals("/user/check-email")
-                || uri.equals("/user/password")
-                || uri.startsWith("/club");
+        for (String path : excludedPaths) {
+            if (pathMatcher.matchStart(path, uri)) {
+                for (String exactPath : excludedExactPaths) {
+                    if (uri.equals(exactPath)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     private String extractTokenFromHeader(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+        if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
             return authHeader.substring(7);
         }
         return null;
