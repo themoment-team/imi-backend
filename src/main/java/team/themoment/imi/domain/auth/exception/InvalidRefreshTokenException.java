@@ -5,6 +5,6 @@ import team.themoment.imi.global.exception.GlobalException;
 
 public class InvalidRefreshTokenException extends GlobalException {
     public InvalidRefreshTokenException() {
-        super("Invalid refresh token", HttpStatus.UNAUTHORIZED);
+        super("유효하지 않은 리프레시 토큰입니다.", HttpStatus.UNAUTHORIZED);
     }
 }

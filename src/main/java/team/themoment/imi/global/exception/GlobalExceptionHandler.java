@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> unExpectedException(RuntimeException ex) {
         log.error("UnExpectedException Occur : ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .body(new ErrorResponse("internal server error has occurred"));
+                .body(new ErrorResponse("서버에 알 수 없는 오류가 발생했습니다."));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         log.error("UnexpectedException Occur : ", ex);
         return ResponseEntity.status(HttpStatus.CONFLICT.value())
-                .body(new ErrorResponse("Data integrity violation has occurred")
+                .body(new ErrorResponse("데이터 무결성 위반이 발생했습니다.")
                 );
     }
 }
