@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record UpdateProfileReqDto(
-        @NotNull(message = "희망전공은 필수입니다.")
         @Size(max = 50, message = "희망전공은 최대 50자까지 입력할 수 있습니다.")
         String major,
         @NotNull(message = "자기소개는 필수입니다.")
