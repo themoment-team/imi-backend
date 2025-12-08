@@ -1,4 +1,21 @@
 services:
+  mysql:
+    container_name: 'imi-mysql'
+    image: 'mysql:8.0'
+    environment:
+      MYSQL_ROOT_PASSWORD: imirdb1234
+      MYSQL_DATABASE: imi
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: imirdb1234
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   redis:
     container_name: 'imi-redis'
     image: 'redis:latest'
@@ -12,3 +29,10 @@ services:
     working_dir: /deploy
     ports:
       - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+volumes:
+  mysql-data:
