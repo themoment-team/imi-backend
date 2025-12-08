@@ -54,6 +54,7 @@ dependencies {
 
     /* Database dependencies */
     runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'org.xerial:sqlite-jdbc'
 
     /* Testing dependencies */
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
