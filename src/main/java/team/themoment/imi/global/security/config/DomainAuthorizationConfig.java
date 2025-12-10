@@ -13,7 +13,7 @@ public class DomainAuthorizationConfig {
                 .requestMatchers("/auth/**").permitAll()
 
                 // Profile
-                .requestMatchers(HttpMethod.GET, "/profile/{studentId}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/profile/{studentId}").authenticated()
                 .requestMatchers(HttpMethod.GET, "/profile/list").permitAll()
                 .requestMatchers(HttpMethod.GET, "/profile/my").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/profile").authenticated()
