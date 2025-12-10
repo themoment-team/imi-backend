@@ -16,12 +16,15 @@ public class UserUtil {
     private final UserJpaRepository userJpaRepository;
 
     public User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthenticatedException();
+        }
+        Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetails userDetails) {
             return userJpaRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(MemberNotFoundException::new);
-        } else {
-            throw new UnauthenticatedException();
         }
+        throw new UnauthenticatedException();
     }
 }
