@@ -83,10 +83,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return true;
             }
         }
-        if (uri.equals("/profile")) {
-            return true;
-        }
-        return pathMatcher.match("/profile/*", uri) && !uri.equals("/profile/my");
+        // /profile/{studentId} 패턴은 permitAll, /profile/my와 /profile은 authenticated
+        return pathMatcher.match("/profile/*", uri) &&
+               !uri.equals("/profile/my") &&
+               !uri.matches("^/profile/?$");
     }
 
     private String extractTokenFromHeader(HttpServletRequest request) {
