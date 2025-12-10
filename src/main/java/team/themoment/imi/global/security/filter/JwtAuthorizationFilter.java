@@ -56,14 +56,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            if (jwtService.validateToken(token)) {
-                String username = jwtService.extractUserId(token);
-                if (username != null) {
-                    UserDetails userDetails = new CustomUserDetails(User.builder().email(username).build());
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+            jwtService.validateToken(token);
+            String username = jwtService.extractUserId(token);
+            if (username != null) {
+                UserDetails userDetails = new CustomUserDetails(User.builder().email(username).build());
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (ExpiredAccessTokenException | ExpiredJwtException e) {
             log.debug("Access token expired for request: {}", request.getRequestURI());
