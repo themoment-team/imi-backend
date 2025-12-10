@@ -31,17 +31,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    private final String[] excludedPaths = {
-            "/auth",
-            "/profile/",
+    private static final String[] PERMIT_ALL_PATHS = {
+            "/auth/**",
             "/profile/list",
             "/user/join",
             "/user/check-email",
             "/user/password",
             "/club"
-    };
-    private final String[] excludedExactPaths = {
-            "/profile/my"
     };
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -83,17 +79,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        for (String exactPath : excludedExactPaths) {
-            if (uri.equals(exactPath)) {
-                return false;
-            }
-        }
-        for (String path : excludedPaths) {
-            if (pathMatcher.match(path + "/**", uri) || uri.equals(path)) {
+        for (String pattern : PERMIT_ALL_PATHS) {
+            if (pathMatcher.match(pattern, uri)) {
                 return true;
             }
         }
-        return false;
+        if (uri.equals("/profile")) {
+            return true;
+        }
+        return pathMatcher.match("/profile/*", uri) && !uri.equals("/profile/my");
     }
 
     private String extractTokenFromHeader(HttpServletRequest request) {
