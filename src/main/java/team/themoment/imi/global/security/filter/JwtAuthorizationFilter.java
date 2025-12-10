@@ -44,8 +44,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             "/profile/my"
     };
 
-    private final String AUTHORIZATION_HEADER = "Authorization";
-    private final String BEARER_PREFIX = "Bearer ";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -83,13 +83,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
+        for (String exactPath : excludedExactPaths) {
+            if (uri.equals(exactPath)) {
+                return false;
+            }
+        }
         for (String path : excludedPaths) {
-            if (pathMatcher.matchStart(path, uri)) {
-                for (String exactPath : excludedExactPaths) {
-                    if (uri.equals(exactPath)) {
-                        return false;
-                    }
-                }
+            if (pathMatcher.match(path + "/**", uri) || uri.equals(path)) {
                 return true;
             }
         }
