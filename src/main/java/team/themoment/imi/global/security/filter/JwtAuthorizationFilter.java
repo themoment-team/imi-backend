@@ -31,15 +31,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    private static final String[] PERMIT_ALL_PATHS = {
-            "/auth/**",
-            "/profile/list",
-            "/user/join",
-            "/user/check-email",
-            "/user/password",
-            "/club"
-    };
-
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
@@ -78,15 +69,28 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        for (String pattern : PERMIT_ALL_PATHS) {
-            if (pathMatcher.match(pattern, uri)) {
+        String method = request.getMethod();
+        if (pathMatcher.match("/auth/**", uri)) {
+            return true;
+        }
+        if ("GET".equals(method)) {
+            if (pathMatcher.match("/profile/list", uri)) {
+                return true;
+            }
+            if (pathMatcher.match("/profile/*", uri) && !uri.equals("/profile/my")) {
                 return true;
             }
         }
-        if (uri.equals("/profile")) {
+        if ("POST".equals(method) && (uri.equals("/user/join") || uri.equals("/user/check-email"))) {
             return true;
         }
-        return pathMatcher.match("/profile/*", uri) && !uri.equals("/profile/my");
+        if ("PATCH".equals(method) && uri.equals("/user/password")) {
+            return true;
+        }
+        if ("GET".equals(method) && uri.equals("/club")) {
+            return true;
+        }
+        return false;
     }
 
     private String extractTokenFromHeader(HttpServletRequest request) {
