@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import team.themoment.imi.domain.user.entity.User;
 import team.themoment.imi.global.security.auth.CustomUserDetails;
 import team.themoment.imi.global.security.exception.ExpiredAccessTokenException;
-import team.themoment.imi.global.security.exception.InvalidAccessTokenException;
 import team.themoment.imi.global.security.jwt.service.JwtService;
 
 import java.io.IOException;
@@ -30,6 +29,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+    private static final String[] PERMIT_ALL_PATHS = {
+            "/auth/**",
+            "/profile/list",
+            "/profile/*",
+            "/user/join",
+            "/user/check-email",
+            "/user/password",
+            "/club"
+    };
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
@@ -69,30 +78,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        String method = request.getMethod();
-        if (pathMatcher.match("/auth/**", uri)) {
-            return true;
+
+        if (uri.equals("/profile/my")) {
+            return false;
         }
-        if ("GET".equals(method)) {
-            if (pathMatcher.match("/profile/list", uri)) {
+
+        for (String pattern : PERMIT_ALL_PATHS) {
+            if (pathMatcher.match(pattern, uri)) {
                 return true;
             }
-            if (pathMatcher.match("/profile/*", uri) && !uri.equals("/profile/my")) {
-                return true;
-            }
-        }
-        if ("POST".equals(method) && (uri.equals("/user/join") || uri.equals("/user/check-email"))) {
-            return true;
-        }
-        if ("PATCH".equals(method) && uri.equals("/user/password")) {
-            return true;
-        }
-        if ("GET".equals(method) && uri.equals("/club")) {
-            return true;
         }
         return false;
     }
-
     private String extractTokenFromHeader(HttpServletRequest request) {
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
