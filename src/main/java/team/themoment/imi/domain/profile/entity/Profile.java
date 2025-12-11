@@ -26,6 +26,8 @@ public class Profile {
     private String major;
     @Column(length = 2400)
     private String content;
+    @Column(name = "is_linked")
+    private Boolean isLinked;
 
     @OneToOne(mappedBy = "profile", fetch = FetchType.EAGER)
     private User user;

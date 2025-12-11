@@ -18,7 +18,8 @@ public class ProfileMapper {
                 profile.getId(),
                 profile.getWanted(),
                 profile.getMajor(),
-                profile.getContent()
+                profile.getContent(),
+                profile.getIsLinked()
         );
     }
 

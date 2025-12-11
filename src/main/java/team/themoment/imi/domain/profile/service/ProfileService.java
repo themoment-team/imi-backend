@@ -50,7 +50,7 @@ public class ProfileService {
         return profileMapper.toProfileListResDto(profileJpaRepository.findAll());
     }
 
-    public void updateProfile(String major, String content, List<String> wanted) {
+    public void updateProfile(String major, String content, List<String> wanted, Boolean isLinked) {
         User user = userUtil.getCurrentUser();
         profileJpaRepository.save(
                 Profile.builder()
@@ -58,6 +58,7 @@ public class ProfileService {
                         .wanted(wanted)
                         .major(major)
                         .content(content)
+                        .isLinked(isLinked)
                         .build()
         );
     }

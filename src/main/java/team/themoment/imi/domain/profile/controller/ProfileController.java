@@ -35,7 +35,7 @@ public class ProfileController {
 
     @PutMapping
     public ResponseEntity<Void> updateProfile(@Valid @RequestBody UpdateProfileReqDto dto) {
-        profileService.updateProfile(dto.major(), dto.content(), dto.wanted());
+        profileService.updateProfile(dto.major(), dto.content(), dto.wanted(), dto.isLinked());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
