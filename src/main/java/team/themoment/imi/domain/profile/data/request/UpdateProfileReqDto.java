@@ -13,6 +13,8 @@ public record UpdateProfileReqDto(
         @Size(max = 2400, message = "자기소개는 최대 2400자까지 입력할 수 있습니다.")
         String content,
         @NotEmpty(message = "희망 동아리는 필수입니다.")
-        List<String> wanted
+        List<String> wanted,
+        @NotNull(message = "URL | 글 선택 여부는 필수입니다.")
+        Boolean isLinked
 ) {
 }

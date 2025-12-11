@@ -12,6 +12,7 @@ public record ProfileResDto(
         Long id,
         List<String> wanted,
         String major,
-        String content
+        String content,
+        Boolean isLinked
 ) {
 }
